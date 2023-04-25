@@ -1,13 +1,13 @@
 # The following code provides a thin wrapper around the Monarch API
 # to provide a simple API for the OpenAI plugin to use. It uses FastAPI
-# and is run on port 3333 by default.
+# and is run on port 3434 by default.
 
 
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
 import httpx
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Path
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -50,7 +50,7 @@ class SearchResultResponse(BaseModel):
          summary="Search for entities in the Monarch knowledge graph",
          response_description="Search results for the given ontology term",
          operation_id="search_entity")
-async def search_entity(term: str,
+async def search_entity(term: str = Path(..., description="The ontology term to search for."),
                         category: Optional[List[str]] = Query(["disease"], description="The category to search within."),
                         rows: Optional[int] = Query(2, description="The maximum number of search results to return.")) -> SearchResultResponse:
     
@@ -157,7 +157,7 @@ class GeneInfo(BaseModel):
     relation_label: str = Field(..., description="The human-readable label of the relation between the gene and the disease.")
 
 class GeneInfoResponse(BaseModel):
-    genes: List[GeneInfo]
+    genes: List[GeneInfo] = Field(..., description="The list of genes associated with the disease.")
 
 # Define the route for the endpoint
 @app.get("/bioentity/disease/{id}/genes",
@@ -166,9 +166,9 @@ class GeneInfoResponse(BaseModel):
          summary="Get gene information for a disease",
          response_description="Gene information for a disease",
          operation_id="get_disease_gene_associations")
-async def get_disease_gene_associations(id: str = "MONDO:0100096",
-                                        max_results: Optional[int] = 10,
-                                        association_type: AssociationType = AssociationType.both) -> GeneInfoResponse:
+async def get_disease_gene_associations(id: str = Path(..., description="The ontology identifier of the disease."),
+                                        max_results: Optional[int] = Query(10, description="The maximum number of results to return."),
+                                        association_type: AssociationType = Query(AssociationType.causal, description="The type of association to return.")) -> GeneInfoResponse:
     
     api_url = f"{BASE_API_URL}/bioentity/disease/{id}/genes"
     params = {
