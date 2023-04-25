@@ -9,7 +9,7 @@ import shlex
 @pytest.fixture(scope="module", autouse=True)  # Change the scope to "module"
 def start_server():
     print("Starting server...")  # Optional: Add this line for debugging
-    server_command = "uvicorn oai_monarch_plugin.main:app --host 0.0.0.0 --port 3333"
+    server_command = "uvicorn oai_monarch_plugin.main:app --host 0.0.0.0 --port 3434"
     server_process = subprocess.Popen(shlex.split(server_command))
 
     # Give the server some time to start before running the tests
@@ -23,7 +23,7 @@ def start_server():
 
 
 
-BASE_URL = "http://localhost:3333"
+BASE_URL = "http://localhost:3434"
 
 #dev = "uvicorn oai_monarch_plugin.main:app --host 0.0.0.0 --port 3333 --reload"
 #dev = "python:uvicorn.main.run(app='oai_monarch_plugin.main:app', host='0.0.0.0', port=3333, reload=True)"
