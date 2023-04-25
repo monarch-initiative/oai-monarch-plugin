@@ -1,0 +1,23 @@
+{
+  "template": "https://github.com/monarch-initiative/monarch-project-template",
+  "commit": "d5867ac08d4fb036f3ceee5333a0ac6cd774aaae",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_name": "oai-monarch-plugin",
+      "__project_slug": "oai_monarch_plugin",
+      "project_description": "ChatGPT plugin and wrapper for Monarch  API.",
+      "min_python_version": "3.9",
+      "file_name": "main",
+      "greeting_recipient": "World",
+      "full_name": "Shawn O'Neil",
+      "email": "shawn@tislab.org",
+      "__author": "Shawn O'Neil <shawn@tislab.org>",
+      "license": "MIT",
+      "github_token_for_doc_deployment": "GH_TOKEN",
+      "github_token_for_pypi_deployment": "PYPI_TOKEN",
+      "_template": "https://github.com/monarch-initiative/monarch-project-template"
+    }
+  },
+  "directory": null
+}
