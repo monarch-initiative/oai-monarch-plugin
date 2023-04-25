@@ -1,7 +1,7 @@
-# Monarch OpenAI Plugin (Alpha Test)
+# oai-monarch-plugin
 
-This repo contains a small shim API that wraps the Monarch API, providing just a search endpoint and a genes-for-disease endpoint for proof-of-concept. It is designed to be used as an OpenAI ChatGPT plugin, so the .well-known folder contains an `ai-plugin.json` and the plugin also calls the default `/openapi.json` provided by FastAPI. 
+ChatGPT plugin and wrapper for Monarch  API.
 
-Currently the search and list-genes endpoint work ok when run from the `run_test_queries.sh` script, but the plugin is only working
-with the search endpoint. It seems unable to properly call the other endpoint though, as a request doesn't even show up in the logs.
+# Acknowledgements
 
+This [cookiecutter](https://cookiecutter.readthedocs.io/en/stable/README.html) project was developed from the [monarch-project-template](https://github.com/monarch-initiative/monarch-project-template) template and will be kept up-to-date using [cruft](https://cruft.github.io/cruft/).
