@@ -29,18 +29,58 @@ BASE_URL = "http://localhost:3434"
 #dev = "python:uvicorn.main.run(app='oai_monarch_plugin.main:app', host='0.0.0.0', port=3333, reload=True)"
 
 
+# @pytest.mark.usefixtures("start_server")
+# def test_search_endpoint():
+#     response = requests.get(f"{BASE_URL}/search/entity/COVID-19?category=disease&rows=2")
+#     assert response.status_code == 200
+#     data = response.json()
+#     assert "results" in data
+#     assert len(data["results"]) == 2
+
+
+# @pytest.mark.usefixtures("start_server")
+# def test_disease_gene_associations_endpoint():
+#     response = requests.get(f"{BASE_URL}/bioentity/disease/DOID:678/genes?max_results=10&association_type=both")
+#     assert response.status_code == 200
+#     data = response.json()
+#     assert "genes" in data
+#     assert len(data["genes"]) == 10
+#     for gene in data["genes"]:
+#         assert "gene_id" in gene
+#         assert "gene_label" in gene
+#         assert "relation_label" in gene
+
+
+# @pytest.mark.usefixtures("start_server")
+# def test_disease_phenotype_associations_endpoint():
+#     response = requests.get(f"{BASE_URL}/bioentity/disease/MONDO:0017309/phenotypes?rows=2")
+#     assert response.status_code == 200
+#     data = response.json()
+#     assert "associations" in data
+#     assert "numFound" in data
+#     assert len(data["associations"]) == 2
+#     for association in data["associations"]:
+#         assert "id" in association
+#         assert "frequency" in association
+#         assert "onset" in association
+#         assert "phenotype" in association
+#         assert "id" in association["phenotype"]
+#         assert "label" in association["phenotype"]
+#         assert association["onset"]["id"] is None or isinstance(association["onset"]["id"], str)
+#         assert association["onset"]["label"] is None or isinstance(association["onset"]["label"], str)
+
+
 @pytest.mark.usefixtures("start_server")
 def test_search_endpoint():
-    response = requests.get(f"{BASE_URL}/search/entity/COVID-19?category=disease&rows=2")
+    response = requests.get(f"{BASE_URL}/search?term=COVID-19&category=disease&rows=2")
     assert response.status_code == 200
     data = response.json()
     assert "results" in data
     assert len(data["results"]) == 2
 
-
 @pytest.mark.usefixtures("start_server")
 def test_disease_gene_associations_endpoint():
-    response = requests.get(f"{BASE_URL}/bioentity/disease/DOID:678/genes?max_results=10&association_type=both")
+    response = requests.get(f"{BASE_URL}/disease-genes?disease_id=DOID:678&max_results=10&association_type=both")
     assert response.status_code == 200
     data = response.json()
     assert "genes" in data
@@ -50,10 +90,9 @@ def test_disease_gene_associations_endpoint():
         assert "gene_label" in gene
         assert "relation_label" in gene
 
-
 @pytest.mark.usefixtures("start_server")
 def test_disease_phenotype_associations_endpoint():
-    response = requests.get(f"{BASE_URL}/bioentity/disease/MONDO:0017309/phenotypes?rows=2")
+    response = requests.get(f"{BASE_URL}/disease-phenotypes?disease_id=MONDO:0017309&rows=2")
     assert response.status_code == 200
     data = response.json()
     assert "associations" in data
