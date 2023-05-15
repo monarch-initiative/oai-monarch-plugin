@@ -19,12 +19,12 @@ poetry install
 sh dev_run.sh
 ```
 
-This will start up a server on 3535
+This will start up a server on 3434
 
 Check it works:
 
-- http://localhost:3535/.well-known/ai-plugin.json
-- http://localhost:3535/docs
+- http://localhost:3434/.well-known/ai-plugin.json
+- http://localhost:3434/docs
 
 ### Register
 
