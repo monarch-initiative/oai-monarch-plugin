@@ -13,7 +13,7 @@ from oai_monarch_plugin import __version__
 
 project = 'oai-monarch-plugin'
 copyright = f"{date.today().year}, Shawn O'Neil <shawn@tislab.org>"
-author = 'Shawn O'Neil <shawn@tislab.org>'
+author = "Shawn O'Neil <shawn@tislab.org>"
 release = __version__
 
 # -- General configuration ---------------------------------------------------
