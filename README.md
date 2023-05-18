@@ -34,7 +34,7 @@ If you have plugin access, you'll see an option
 
 Select the plugin model from the top drop down, then select “Plugins”, “Plugin Store”, and finally “Install an unverified plugin” or “Develop your own plugin”.
 
-Enter `localhost:3535`
+Enter `localhost:3434`
 
 You should see the plugin activated
 
