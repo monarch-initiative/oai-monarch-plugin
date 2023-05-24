@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from os.path import abspath, dirname
 
-BASE_API_URL = "https://api.monarchinitiative.org/api"
+BASE_API_URL = "https://api-dev.monarchinitiative.org/v3/api"
 
 app = FastAPI()
 
@@ -39,7 +39,9 @@ app.mount("/static", StaticFiles(directory = dirname(abspath(__file__)) + "/stat
 # Define the models for search results
 class SearchResultItem(BaseModel):
     id: str = Field(..., description="The ontology identifier of the search result.")
-    synonyms: List[str] = Field(..., description="The list of synonyms for the search result.")
+    name: str = Field(..., description="The name of the search result.")
+    category: List[str] = Field(..., description="The categories of the search result.")
+    description: Optional[str] = Field(None, description="The description of the search result.")
 
 class SearchResultResponse(BaseModel):
     results: List[SearchResultItem] = Field(..., description="The list of search results.")
@@ -51,14 +53,15 @@ class SearchResultResponse(BaseModel):
          response_description="Search results for the given ontology term",
          operation_id="search_entity")
 async def search_entity(term: str = Query(..., description="The ontology term to search for."),
-                        categories: Optional[List[str]] = Query(["disease"], description="The categories to search within, as an array of strings. Valid categories are: disease, phenotype, and gene."),
+                        category: Optional[str] = Query("biolink:Disease", description="The category to search within, as an array of strings. Valid categories are: biolink:Disease, biolink:PhenotypicQuality, and biolink:Gene"),
                         rows: Optional[int] = Query(2, description="The maximum number of search results to return.")) -> SearchResultResponse:
     
-    api_url = f"{BASE_API_URL}/search/entity/{term}"
-    
+    api_url = f"{BASE_API_URL}/search"
+
     params = {
-        "categories": categories,
-        "rows": rows
+        "q": term,
+        "category": category,
+        "limit": rows
     }
     
     async with httpx.AsyncClient() as client:
@@ -67,14 +70,11 @@ async def search_entity(term: str = Query(..., description="The ontology term to
     response_json = response.json()
     
     search_results = []
-    for doc in response_json.get("docs", []):
-        search_results.append(SearchResultItem(id=doc.get("id"), synonyms=doc.get("synonym", [])))
+    for item in response_json.get("items", []):
+        search_results.append(SearchResultItem(id=item.get("id"), name=item.get("name"), category=item.get("category"), description=item.get("description")))
     
     res = {"results": search_results}
-    print(res)
     return res
-
-
 
 
 ##############################
@@ -87,8 +87,8 @@ class Phenotype(BaseModel):
 
 class PhenotypeAssociation(BaseModel):
     id: str
-    frequency: Dict[str, Optional[str]]
-    onset: Dict[str, Optional[str]]
+    frequency_qualifier: Optional[str] = None
+    onset_qualifier: Optional[str] = None
     phenotype: Phenotype
 
 class PhenotypeAssociationResponse(BaseModel):
@@ -102,14 +102,16 @@ class PhenotypeAssociationResponse(BaseModel):
          response_description="Phenotypes associated with disease",
          operation_id="get_disease_phenotype_associations")
 async def get_disease_phenotype_associations(disease_id: str = Query(..., description="The ontology identifier of the disease."),
-                                             rows: Optional[int] = 10,
-                                             unselect_evidence: Optional[bool] = True) -> PhenotypeAssociationResponse:
+                                             limit: Optional[int] = 10,
+                                             offset: Optional[int] = 1) -> PhenotypeAssociationResponse:
     
-    api_url = f"{BASE_API_URL}/bioentity/disease/{disease_id}/phenotypes"
+    api_url = f"{BASE_API_URL}/association/all"
 
     params = {
-        "rows": rows,
-        "unselect_evidence": unselect_evidence
+        "category": "biolink:DiseaseToPhenotypicFeatureAssociation",
+        "entity": disease_id,
+        "limit": limit,
+        "offset": offset
     }
 
     async with httpx.AsyncClient() as client:
@@ -118,24 +120,23 @@ async def get_disease_phenotype_associations(disease_id: str = Query(..., descri
     response_json = response.json()
 
     associations = []
-    for association in response_json.get("associations", []):
+    for item in response_json.get("items", []):
         phenotype = Phenotype(
-            id=association.get("object", {}).get("id"),
-            label=association.get("object", {}).get("label")
+            id=item.get("object"),
+            label=item.get("object_label")
         )
-        associations.append(
-            PhenotypeAssociation(
-                id=association.get("id"),
-                frequency=association.get("frequency", {}),
-                onset=association.get("onset", {}),
+        assoc = PhenotypeAssociation(
+                id=item.get("id"),
+                frequency_qualifier=item.get("frequency_qualifier"),
+                onset_qualifier=item.get("onset_qualifier"),
                 phenotype=phenotype
             )
-        )
+        associations.append(assoc)
 
-    num_found = response_json.get("numFound", 0)
+    num_found = response_json.get("total", 0)
+    res = {"associations": associations, "numFound": num_found}
 
-    return {"associations": associations, "numFound": num_found}
-
+    return res
 
 
 
@@ -144,11 +145,6 @@ async def get_disease_phenotype_associations(disease_id: str = Query(..., descri
 ### Disease -> Gene endpoint
 ##############################
 
-# Define the association types as an enumeration
-class AssociationType(str, Enum):
-    causal = "causal"
-    non_causal = "non_causal"
-    both = "both"
 
 # Define the models for gene information
 class GeneInfo(BaseModel):
@@ -167,25 +163,26 @@ class GeneInfoResponse(BaseModel):
          response_description="List of genes for a disease",
          operation_id="get_disease_gene_associations")
 async def get_disease_gene_associations(disease_id: str = Query(..., description="The ontology identifier of the disease."),
-                                        max_results: Optional[int] = Query(10, description="The maximum number of results to return."),
-                                        association_type: AssociationType = Query(AssociationType.both, description="The type of association to return. Valid values are causal, non_causal, and both.")) -> GeneInfoResponse:
+                                        max_results: Optional[int] = Query(10, description="The maximum number of results to return.")) -> GeneInfoResponse:
     
-    api_url = f"{BASE_API_URL}/bioentity/disease/{disease_id}/genes"
+    api_url = f"{BASE_API_URL}/association/all"
     params = {
-        "rows": max_results,
-        "association_type": association_type.value  # Convert the enumeration value to a string
+        "category": "biolink:GeneToDiseaseAssociation",
+        "entity": disease_id,
+        "limit": max_results,
+        "offset": 1
     }
-    
+
     async with httpx.AsyncClient() as client:
         response = await client.get(api_url, params=params)
 
     response_json = response.json()
 
     gene_info = []
-    for association in response_json.get("associations", []):
-        gene_id = association.get("object", {}).get("id")
-        gene_label = association.get("object", {}).get("label")
-        relation_label = association.get("relation", {}).get("label")
+    for item in response_json.get("items", []):
+        gene_id = item.get("subject")
+        gene_label = item.get("subject_label")
+        relation_label = item.get("predicate")
         if gene_id:
             gene_info.append({
                 "gene_id": gene_id,
@@ -194,8 +191,6 @@ async def get_disease_gene_associations(disease_id: str = Query(..., description
             })
 
     return {"genes": gene_info}
-
-
 
 
 
