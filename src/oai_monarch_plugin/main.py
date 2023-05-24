@@ -145,11 +145,6 @@ async def get_disease_phenotype_associations(disease_id: str = Query(..., descri
 ### Disease -> Gene endpoint
 ##############################
 
-# Define the association types as an enumeration
-class AssociationType(str, Enum):
-    causal = "causal"
-    non_causal = "non_causal"
-    both = "both"
 
 # Define the models for gene information
 class GeneInfo(BaseModel):
@@ -168,8 +163,7 @@ class GeneInfoResponse(BaseModel):
          response_description="List of genes for a disease",
          operation_id="get_disease_gene_associations")
 async def get_disease_gene_associations(disease_id: str = Query(..., description="The ontology identifier of the disease."),
-                                        max_results: Optional[int] = Query(10, description="The maximum number of results to return."),
-                                        association_type: AssociationType = Query(AssociationType.both, description="The type of association to return. Valid values are causal, non_causal, and both.")) -> GeneInfoResponse:
+                                        max_results: Optional[int] = Query(10, description="The maximum number of results to return.")) -> GeneInfoResponse:
     
     api_url = f"{BASE_API_URL}/association/all"
     params = {
