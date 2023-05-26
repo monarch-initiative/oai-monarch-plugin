@@ -12,14 +12,21 @@ Join the waitlist [here](https://openai.com/waitlist/plugins)
 
 It may be possible to grant permissions broadly across an organization? https://community.openai.com/t/developer-access-for-colleagues/157315
 
-### Run the server
+### Run server/dev server/tests
+
+Output of `make help`:
 
 ```bash
-poetry install
-sh dev_run.sh
+make all -- installs requirements, exports requirements.txt, runs production server
+make dev -- installs requirements, runs hot-restart dev server
+make test -- runs tests
+make start -- runs production server
+make start-dev -- runs hot-restart dev server
+make export-requirements -- exports requirements.txt
+make help -- show this help
 ```
 
-This will start up a server on 3434
+The dev server currently runs on 3434, production 8080.
 
 Check it works:
 
@@ -42,4 +49,4 @@ If you run into difficulties, see https://platform.openai.com/docs/plugins/intro
 
 # Acknowledgements
 
-This [cookiecutter](https://cookiecutter.readthedocs.io/en/stable/README.html) project was developed from the [monarch-project-template](https://github.com/monarch-initiative/monarch-project-template) template and will be kept up-to-date using [cruft](https://cruft.github.io/cruft/).
+This [cookiecutter](https://cookiecutter.readthedocs.io/en/stable/README.html) project was developed from the [monarch-project-template](https://github.com/monarch-initiative/monarch-project-template) template and will be kept up-to-date using [cruft](https://cruft.github.io/cruft/). Makefile modified from [Sierra Moxon's](https://github.com/geneontology/go-fastapi/blob/main/Makefile).
