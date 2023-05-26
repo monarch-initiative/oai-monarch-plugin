@@ -1,43 +1,19 @@
-import requests
-import json
+from fastapi.testclient import TestClient
 import pytest
 
-import subprocess
-import time
-import shlex
+from oai_monarch_plugin.main import app  # replace with the actual path of your FastAPI app
 
-@pytest.fixture(scope="module", autouse=True)  # Change the scope to "module"
-def start_server():
-    print("Starting server...")  # Optional: Add this line for debugging
-    server_command = "uvicorn oai_monarch_plugin.main:app --host 0.0.0.0 --port 3434"
-    server_process = subprocess.Popen(shlex.split(server_command))
+test_client = TestClient(app)
 
-    # Give the server some time to start before running the tests
-    time.sleep(0.5)
-
-    yield
-
-    # Clean up the server process after tests have run
-    server_process.terminate()
-    server_process.wait()
-
-
-
-BASE_URL = "http://localhost:3434"
-
-
-@pytest.mark.usefixtures("start_server")
 def test_search_endpoint():
-    response = requests.get(f"{BASE_URL}/search?term=COVID-19&category=biolink:Disease&rows=2")
+    response = test_client.get("/search?term=COVID-19&category=biolink:Disease&rows=2")
     assert response.status_code == 200
     data = response.json()
     assert "results" in data
     assert len(data["results"]) == 2
 
-
-@pytest.mark.usefixtures("start_server")
 def test_disease_genes_endpoint():
-    response = requests.get(f"{BASE_URL}/disease-genes?disease_id=MONDO:0019391&max_results=2")
+    response = test_client.get("/disease-genes?disease_id=MONDO:0019391&max_results=2")
 
     # Basic assertions
     assert response.status_code == 200, f"Expected status code 200 but received {response.status_code} with message: {response.text}"
@@ -64,11 +40,8 @@ def test_disease_genes_endpoint():
         assert isinstance(gene['gene_label'], str), f"Expected 'gene_label' to be a string but found {type(gene['gene_label'])}"
         assert isinstance(gene['relation_label'], str), f"Expected 'relation_label' to be a string but found {type(gene['relation_label'])}"
 
-
-
-@pytest.mark.usefixtures("start_server")
 def test_disease_phenotype_associations_endpoint():
-    response = requests.get(f"{BASE_URL}/disease-phenotypes?disease_id=MONDO:0017309&limit=2")
+    response = test_client.get("/disease-phenotypes?disease_id=MONDO:0017309&limit=2")
 
     # Basic assertions
     assert response.status_code == 200, f"Expected status code 200 but received {response.status_code} with message: {response.text}"
@@ -94,7 +67,6 @@ def test_disease_phenotype_associations_endpoint():
 
     # Check that numFound is an integer
     assert isinstance(data['numFound'], int), f"Expected 'numFound' to be an integer but found {type(data['numFound'])}"
-
 
 
 
