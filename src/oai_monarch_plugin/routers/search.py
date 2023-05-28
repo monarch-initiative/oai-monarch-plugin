@@ -40,8 +40,10 @@ async def search_entity(term: str = Query(..., description="The ontology term to
     }
     
     async with httpx.AsyncClient() as client:
+        print(client.build_request("GET", api_url, params=params))
         response = await client.get(api_url, params=params)
 
+    print(response.text)
     response_json = response.json()
     
     search_results = []
