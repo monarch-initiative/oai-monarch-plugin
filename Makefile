@@ -23,11 +23,25 @@ export-requirements:
 install:
 	poetry install
 
+queries:
+	echo "Testing Search"
+	curl -X GET "http://localhost:3434/search?term=COVID-19&category=disease&rows=2"
+
+	echo -e "\n\nTesting diseease -> gene associations"
+	curl -X GET "http://localhost:3434/disease-genes?disease_id=MONDO:0019391&max_results=10&association_type=both"
+
+	echo -e "\n\nTesting diseease -> phenotype associations"
+	curl -X GET "http://localhost:3434/disease-phenotypes?disease_id=MONDO:0019391&phenotypes&rows=2"
+
+
+
+
 help:
 	@echo ""
 	@echo "make all -- installs requirements, exports requirements.txt, runs production server"
 	@echo "make dev -- installs requirements, runs hot-restart dev server"
 	@echo "make test -- runs tests"
+	@echo "make queries -- runs tests against dev server (not via pytest, assumes dev server is running)"
 	@echo "make start -- runs production server"
 	@echo "make start-dev -- runs hot-restart dev server"
 	@echo "make export-requirements -- exports requirements.txt"
