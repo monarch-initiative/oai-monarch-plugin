@@ -2,8 +2,8 @@
     "schema_version": "v1",
     "name_for_human": "Monarch Alpha",
     "name_for_model": "monarch",
-    "description_for_human": "Plugin for searching for genes related to diseases.",
-    "description_for_model": "Plugin for searching for genes related to diseases. You can search for diseases and genes and get a list of related genes. If a call to the plugin fails, do not continue, just report the error to the user.",
+    "description_for_human": "Plugin for searching and retrieving basic information from the Monarch Initiative knowledge graph.",
+    "description_for_model": "Plugin for searching and retrieving basic information from the Monarch Initiative knowledge graph. You can search for genes, diseases, and phenotypes by name to get the associated ontology identifier. You can retrieve associations between genes, diseases, and phenotypes via their identifiers. Note that users may use synonyms for these terms such as 'illness' or 'symptom'. You can add additional contextual information such as lay descriptions of terms if you are confident in them, but note for the user which information was drawn from this plugin if doing so. Use your best judgement for setting the offset and limit parameters to answer the users' questions, for example by retrieving more associations if the user asks for a summary. If there are more total associations available than are shown, you should indicate this to the user.",
     "auth": {
       "type": "none"
     },
