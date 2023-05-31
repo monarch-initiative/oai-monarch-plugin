@@ -10,36 +10,36 @@ BASE_API_URL = "https://api-dev.monarchinitiative.org/v3/api"
 router = APIRouter()
 
 ############################
-### Disease -> Gene endpoint
+### Gene -> Disease endpoint
 ############################
 
-@router.get("/disease-genes",
-            response_model=GeneAssociations,
-            description="Get a list of genes associated with a disease",
-            summary="Get a list of genes associated with a disease",
-            response_description="A GeneAssociations object containing a list of GeneAssociation objects",
-            operation_id="get_disease_gene_associations")
-async def get_disease_gene_associations(disease_id: str = Query(..., description="The ontology identifier of the disease.", example="MONDO:0009061"),
+@router.get("/gene-diseases",
+            response_model=DiseaseAssociations,
+            description="Get a list of diseases associated with a gene",
+            summary="Get a list of diseases associated with a gene",
+            response_description="A DiseaseAssociations object containing a list of DiseaseAssociation objects",
+            operation_id="get_gene_disease_associations")
+async def get_gene_disease_associations(gene_id: str = Query(..., description="The ontology identifier of the gene.", example="HGNC:1884"),
                                             limit: Optional[int] = Query(10, description="The maximum number of associations to return."),
-                                            offset: Optional[int] = Query(1, description="Offset for pagination of results")) -> GeneAssociations:
+                                            offset: Optional[int] = Query(1, description="Offset for pagination of results")) -> DiseaseAssociations:
         
     
         genericAssociations = await get_association_all(category = "biolink:GeneToDiseaseAssociation", 
-                                                entity = disease_id, 
+                                                entity = gene_id, 
                                                 limit = limit, 
                                                 offset = offset)
     
         associations = []
         for item in genericAssociations.get("items", []):
-            gene = Gene(
+            disease = Disease(
                 id=item.get("object"),
                 label=item.get("object_label")
             )
-            assoc = GeneAssociation(
+            assoc = DiseaseAssociation(
                     id=item.get("id"),
-                    gene=gene
+                    disease=disease
                 )
             associations.append(assoc)
     
 
-        return GeneAssociations(associations = associations, total = genericAssociations.get("total", 0))
+        return DiseaseAssociations(associations = associations, total = genericAssociations.get("total", 0))
