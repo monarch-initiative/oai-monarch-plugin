@@ -69,6 +69,35 @@ def test_disease_phenotype_associations_endpoint():
     assert isinstance(data['numFound'], int), f"Expected 'numFound' to be an integer but found {type(data['numFound'])}"
 
 
+def test_gene_to_phenotype():
+    response = test_client.get("/gene-phenotypes?gene_id=HGNC:1884&rows=2")
+
+    # Basic assertions
+    assert response.status_code == 200, f"Expected status code 200 but received {response.status_code} with message: {response.text}"
+
+    # Ensure response is valid JSON
+    data = response.json()
+
+    # Check for presence of 'associations' and 'numFound' in the response
+    assert "associations" in data, "Response body did not contain expected 'associations' field"
+    assert "numFound" in data, "Response body did not contain expected 'numFound' field"
+
+    # Check that the number of returned associations matches the limit parameter
+    assert len(data["associations"]) == 2, f"Expected 2 associations but received {len(data['associations'])}"
+
+    # Check structure of each association
+    for association in data["associations"]:
+        assert "id" in association
+        assert "frequency_qualifier" in association
+        assert "onset_qualifier" in association
+        assert "phenotype" in association
+        assert "id" in association["phenotype"]
+        assert "label" in association["phenotype"]
+
+    # Check that numFound is an integer
+    assert isinstance(data['numFound'], int), f"Expected 'numFound' to be an integer but found {type(data['numFound'])}"
+
+
 
 if __name__ == "__main__":
     pytest.main()

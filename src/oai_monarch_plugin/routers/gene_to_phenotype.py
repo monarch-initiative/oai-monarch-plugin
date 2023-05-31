@@ -11,59 +11,60 @@ router = APIRouter()
 ### Gene -> Phenotype endpoint
 ##############################
 
-class GenePhenotypeAssociation(BaseModel):
-    subject: str = Field(..., description="The gene identifier.")
-    relation: str = Field(..., description="The ontology identifier of the relation.")
-    objects: List[str] = Field(..., description="A list of phenotype ontology identifiers associated with the gene.")
+class Phenotype(BaseModel):
+    id: str = Field(..., description="The ontology identifier of the phenotype.")
+    label: str = Field(..., description="The human-readable label of the phenotype.")
 
-class GenePhenotypeAssociationResponse(BaseModel):
-    compact_associations: List[GenePhenotypeAssociation]
+class PhenotypeAssociation(BaseModel):
+    id: str
+    frequency_qualifier: Optional[str] = None
+    onset_qualifier: Optional[str] = None
+    phenotype: Phenotype
+
+class PhenotypeAssociationResponse(BaseModel):
+    associations: List[PhenotypeAssociation]
     numFound: int
 
 @router.get("/gene-phenotypes",
-         response_model=GenePhenotypeAssociationResponse,
+         response_model=PhenotypeAssociationResponse,
          description="Get phenotypes associated with gene",
          summary="Get phenotypes associated with gene",
          response_description="Phenotypes associated with gene",
          operation_id="get_gene_phenotype_associations")
-async def get_gene_phenotype_associations(gene_id: str = Query(..., description="The gene ontology identifier."),
-                                          rows: Optional[int] = 4,
-                                          facet: Optional[bool] = False,
-                                          unselect_evidence: Optional[bool] = True,
-                                          exclude_automatic_assertions: Optional[bool] = False,
-                                          fetch_objects: Optional[bool] = False,
-                                          use_compact_associations: Optional[bool] = True,
-                                          direct: Optional[bool] = False,
-                                          direct_taxon: Optional[bool] = False) -> GenePhenotypeAssociationResponse:
-
-    api_url = f"{BASE_API_URL}/bioentity/gene/{gene_id}/phenotypes"
+async def get_gene_phenotype_associations(gene_id: str = Query(..., description="The ontology identifier of the gene."),
+                                             rows: Optional[int] = 10,
+                                             offset: Optional[int] = 1) -> PhenotypeAssociationResponse:
+    
+    api_url = f"{BASE_API_URL}/association/all"
 
     params = {
-        "rows": rows,
-        "facet": facet,
-        "unselect_evidence": unselect_evidence,
-        "exclude_automatic_assertions": exclude_automatic_assertions,
-        "fetch_objects": fetch_objects,
-        "use_compact_associations": use_compact_associations,
-        "direct": direct,
-        "direct_taxon": direct_taxon
+        "category": "biolink:GeneToPhenotypicFeatureAssociation",
+        "entity": gene_id,
+        "limit": rows,
+        "offset": offset
     }
 
     async with httpx.AsyncClient() as client:
+        print(client.build_request("GET", api_url, params=params))
         response = await client.get(api_url, params=params)
 
     response_json = response.json()
 
-    compact_associations = []
-    for association in response_json.get("compact_associations", []):
-        compact_associations.append(
-            GenePhenotypeAssociation(
-                subject=association.get("subject"),
-                relation=association.get("relation"),
-                objects=association.get("objects", [])
-            )
+    associations = []
+    for item in response_json.get("items", []):
+        phenotype = Phenotype(
+            id=item.get("object"),
+            label=item.get("object_label")
         )
+        assoc = PhenotypeAssociation(
+                id=item.get("id"),
+                frequency_qualifier=item.get("frequency_qualifier"),
+                onset_qualifier=item.get("onset_qualifier"),
+                phenotype=phenotype
+            )
+        associations.append(assoc)
 
-    num_found = response_json.get("numFound", 0)
+    num_found = response_json.get("total", 0)
+    res = {"associations": associations, "numFound": num_found}
 
-    return {"compact_associations": compact_associations, "numFound": num_found}
+    return res
