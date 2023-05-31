@@ -119,5 +119,53 @@ def test_gene_to_disease():
         assert "label" in association["disease"]
 
 
+def test_phenotype_to_disease():
+    response = test_client.get("/phenotype-diseases?phenotype_id=HP:0002721&limit=2")
+
+    # Basic assertions
+    assert response.status_code == 200, f"Expected status code 200 but received {response.status_code} with message: {response.text}"
+
+    # Ensure response is valid JSON
+    data = response.json()
+
+    # Check for presence of 'associations' and 'numFound' in the response
+    assert "associations" in data, "Response body did not contain expected 'associations' field"
+    assert "total" in data, "Response body did not contain expected 'total' field"
+
+    # Check that the number of returned associations matches the limit parameter
+    assert len(data["associations"]) == 2, f"Expected 2 associations but received {len(data['associations'])}"
+
+    # Check structure of each association
+    for association in data["associations"]:
+        assert "id" in association
+        assert "disease" in association
+        assert "id" in association["disease"]
+        assert "label" in association["disease"]
+
+def test_phenotype_to_gene():
+    response = test_client.get("/phenotype-genes?phenotype_id=HP:0002721&limit=2")
+    print(response.text)
+
+    # Basic assertions
+    assert response.status_code == 200, f"Expected status code 200 but received {response.status_code} with message: {response.text}"
+
+    # Ensure response is valid JSON
+    data = response.json()
+
+    # Check for presence of 'associations' and 'numFound' in the response
+    assert "associations" in data, "Response body did not contain expected 'associations' field"
+    assert "total" in data, "Response body did not contain expected 'total' field"
+
+    # Check that the number of returned associations matches the limit parameter
+    assert len(data["associations"]) == 2, f"Expected 2 associations but received {len(data['associations'])}"
+
+    # Check structure of each association
+    for association in data["associations"]:
+        assert "id" in association
+        assert "gene" in association
+        assert "id" in association["gene"]
+        assert "label" in association["gene"]
+
+
 if __name__ == "__main__":
     pytest.main()

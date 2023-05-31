@@ -20,8 +20,8 @@ router = APIRouter()
          response_description="A PhenotypeAssociations object containing a list of PhenotypeAssociation objects",
          operation_id="get_gene_phenotype_associations")
 async def get_gene_phenotype_associations(gene_id: str = Query(..., description="The ontology identifier of the gene.", example="HGNC:1884"),
-                                             limit: Optional[int] = 10,
-                                             offset: Optional[int] = 1) -> PhenotypeAssociations:
+                                             limit: Optional[int] = Query(10, description="The maximum number of associations to return."),
+                                             offset: Optional[int] = Query(1, description="Offset for pagination of results")) -> PhenotypeAssociations:
     
 
     genericAssociations = await get_association_all(category = "biolink:GeneToPhenotypicFeatureAssociation", 

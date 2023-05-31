@@ -14,7 +14,7 @@ async def get_association_all(category: str, entity: str, limit: int, offset: in
     }
 
     async with httpx.AsyncClient() as client:
-        print("Calling: " + str(client.build_request("GET", api_url, params=params).url))
+        #print("Calling: " + str(client.build_request("GET", api_url, params=params).url))
         response = await client.get(api_url, params=params)
 
     response_json = response.json()
