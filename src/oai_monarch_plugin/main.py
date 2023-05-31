@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from os.path import abspath, dirname
-from .routers import search, disease_to_gene, disease_to_phenotype, gene_to_phenotype, gene_to_disease
+from .routers import search, disease_to_gene, disease_to_phenotype, gene_to_phenotype, gene_to_disease, phenotype_to_disease, phenotype_to_gene
 
 BASE_API_URL = "https://api-dev.monarchinitiative.org/v3/api"
 
@@ -32,7 +32,9 @@ app.mount("/.well-known", StaticFiles(directory = dirname(abspath(__file__)) + "
 app.mount("/static", StaticFiles(directory = dirname(abspath(__file__)) + "/static"), name="static")
 
 app.include_router(search.router)
-app.include_router(gene_to_phenotype.router)
 app.include_router(disease_to_gene.router)
 app.include_router(disease_to_phenotype.router)
 app.include_router(gene_to_disease.router)
+app.include_router(gene_to_phenotype.router)
+app.include_router(phenotype_to_disease.router)
+app.include_router(phenotype_to_gene.router)
