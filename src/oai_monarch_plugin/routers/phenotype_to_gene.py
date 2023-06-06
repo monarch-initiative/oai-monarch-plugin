@@ -31,6 +31,7 @@ async def get_phenotype_gene_associations(phenotype_id: str = Query(..., descrip
         associations = []
         for item in genericAssociations.get("items", []):
             gene = Gene(
+                # in a GeneToPhenotypicFeatureAssociation, the gene is the subject
                 id=item.get("subject"),
                 label=item.get("subject_label")
             )

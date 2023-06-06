@@ -32,8 +32,9 @@ async def get_disease_gene_associations(disease_id: str = Query(..., description
         associations = []
         for item in genericAssociations.get("items", []):
             gene = Gene(
-                id=item.get("object"),
-                label=item.get("object_label")
+                # in a GeneToDiseaseAssociation, the gene is the subject
+                id=item.get("subject"),
+                label=item.get("subject_label")
             )
             assoc = GeneAssociation(
                     id=item.get("id"),

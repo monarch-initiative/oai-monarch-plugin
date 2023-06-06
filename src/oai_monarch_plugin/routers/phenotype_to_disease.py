@@ -32,8 +32,9 @@ async def get_phenotype_disease_associations(phenotype_id: str = Query(..., desc
         associations = []
         for item in genericAssociations.get("items", []):
             disease = Disease(
-                id=item.get("object"),
-                label=item.get("object_label")
+                # in a DiseaseToPhenotypicFeatureAssociation, the disease is the subject
+                id=item.get("subject"),
+                label=item.get("subject_label")
             )
             assoc = DiseaseAssociation(
                     id=item.get("id"),
