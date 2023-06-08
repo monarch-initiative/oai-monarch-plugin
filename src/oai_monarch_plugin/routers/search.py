@@ -2,8 +2,9 @@ from fastapi import APIRouter, Query
 from typing import Any, Dict, List, Optional
 import httpx
 from pydantic import BaseModel, Field
+from .config import settings
 
-BASE_API_URL = "https://api-dev.monarchinitiative.org/v3/api"
+BASE_API_URL = settings.monarch_api_url
 
 router = APIRouter()
 

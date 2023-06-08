@@ -4,8 +4,9 @@ import httpx
 from pydantic import BaseModel, Field
 from .models import *
 from .utils import get_association_all
+from .config import settings
 
-BASE_API_URL = "https://api-dev.monarchinitiative.org/v3/api"
+BASE_API_URL = settings.monarch_api_url
 
 router = APIRouter()
 

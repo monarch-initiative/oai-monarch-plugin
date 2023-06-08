@@ -1,10 +1,13 @@
 import httpx
+from .config import settings
 
+BASE_API_URL = settings.monarch_api_url
 
 async def get_association_all(category: str, entity: str, limit: int, offset: int) -> dict:
     """Get associations for a given category and entity.
     The response will be a list of dictionaries with entries for id, subject, subject_label, predicate, object, object_label, relation_label, frequency_qualifier, and onset_qualifier."""
-    api_url = f"https://api-dev.monarchinitiative.org/v3/api/association/all"
+
+    api_url = f"{BASE_API_URL}/association/all"
 
     params = {
         "category": category,
