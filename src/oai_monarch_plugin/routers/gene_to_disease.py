@@ -20,12 +20,12 @@ router = APIRouter()
             summary="Get a list of diseases associated with a gene",
             response_description="A DiseaseAssociations object containing a list of DiseaseAssociation objects",
             operation_id="get_gene_disease_associations")
-async def get_gene_disease_associations(gene_id: str = Query(..., description="The ontology identifier of the gene.", example="HGNC:1884"),
+async def get_gene_disease_associations(gene_id: str = Query(..., description="The identifier of the gene.", example="HGNC:1884"),
                                             limit: Optional[int] = Query(10, description="The maximum number of associations to return."),
                                             offset: Optional[int] = Query(1, description="Offset for pagination of results")) -> DiseaseAssociations:
         
     
-        genericAssociations = await get_association_all(category = "biolink:GeneToDiseaseAssociation", 
+        genericAssociations = await get_association_all(category = "biolink:CausalGeneToDiseaseAssociation",
                                                 entity = gene_id, 
                                                 limit = limit, 
                                                 offset = offset)

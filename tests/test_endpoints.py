@@ -6,7 +6,7 @@ from oai_monarch_plugin.main import app  # replace with the actual path of your 
 test_client = TestClient(app)
 
 def test_search_endpoint():
-    response = test_client.get("/search?term=COVID-19&category=biolink:Disease&rows=2")
+    response = test_client.get("/search?term=COVID-19&category=biolink:Disease&limit=2")
     assert response.status_code == 200
     data = response.json()
     assert "results" in data
@@ -109,7 +109,7 @@ def test_gene_to_disease():
     assert "total" in data, "Response body did not contain expected 'total' field"
 
     # Check that the number of returned associations matches the limit parameter
-    assert len(data["associations"]) == 2, f"Expected 2 associations but received {len(data['associations'])}"
+    assert len(data["associations"]) == 1, f"Expected 1 association but received {len(data['associations'])}"
 
     # Check structure of each association
     for association in data["associations"]:

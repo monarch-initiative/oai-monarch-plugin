@@ -25,7 +25,7 @@ async def get_disease_gene_associations(disease_id: str = Query(..., description
                                             offset: Optional[int] = Query(1, description="Offset for pagination of results")) -> GeneAssociations:
         
     
-        genericAssociations = await get_association_all(category = "biolink:GeneToDiseaseAssociation", 
+        genericAssociations = await get_association_all(category = "biolink:CausalGeneToDiseaseAssociation",
                                                 entity = disease_id, 
                                                 limit = limit, 
                                                 offset = offset)
