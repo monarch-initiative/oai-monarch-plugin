@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional
 import httpx
 from fastapi import APIRouter, Query
 from pydantic import BaseModel, Field
+from loguru import logger
 
 from .config import settings
 
@@ -59,14 +60,20 @@ async def search_entity(
     params = {"q": term, "category": category, "limit": limit, "offset": offset}
 
     async with httpx.AsyncClient() as client:
-        print("Calling: " + str(client.build_request("GET", api_url, params=params).url))
+        logger.info({
+            "event": "monarch_api_call",
+            "url": str(client.build_request("GET", api_url, params=params).url),
+            "params": params,
+            "api_url": api_url,
+            "method": "GET"
+        })
+
         response = await client.get(api_url, params=params)
 
     response_json = response.json()
 
     search_results = []
     for item in response_json.get("items", []):
-        print(item)
         search_results.append(
             SearchResultItem(
                 id=item.get("id"),

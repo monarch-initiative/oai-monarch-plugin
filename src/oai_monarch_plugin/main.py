@@ -2,16 +2,14 @@
 # to provide a simple API for the OpenAI plugin to use. It uses FastAPI
 # and is run on port 3434 by default.
 
-
-from enum import Enum
 from os.path import abspath, dirname
-from typing import Any, Dict, List, Optional
-
-import httpx
-from fastapi import FastAPI, Path, Query
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
+
+# local imports
+from .logger_config import configure_logger
+from .middlewares import LoggingMiddleware
 
 from .routers import (
     disease_to_gene,
@@ -23,10 +21,14 @@ from .routers import (
     search,
 )
 
-BASE_API_URL = "https://api-dev.monarchinitiative.org/v3/api"
-
+# setup base app
 app = FastAPI()
 
+# setup logging
+configure_logger()
+app.middleware("http")(LoggingMiddleware())
+
+# setup CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -34,7 +36,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # Serve static files needed for OpenAI plugin
 app.mount(
@@ -44,6 +45,7 @@ app.mount(
 )
 app.mount("/static", StaticFiles(directory=dirname(abspath(__file__)) + "/static"), name="static")
 
+# setup routers
 app.include_router(search.router)
 app.include_router(disease_to_gene.router)
 app.include_router(disease_to_phenotype.router)
