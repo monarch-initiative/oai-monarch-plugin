@@ -2,13 +2,8 @@
 # to provide a simple API for the OpenAI plugin to use. It uses FastAPI
 # and is run on port 3434 by default.
 
-
-from enum import Enum
 from os.path import abspath, dirname
-from typing import Any, Dict, List, Optional
-
-import httpx
-from fastapi import FastAPI, Path, Query
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -42,7 +37,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 # Serve static files needed for OpenAI plugin
 app.mount(
     "/.well-known",
@@ -51,6 +45,7 @@ app.mount(
 )
 app.mount("/static", StaticFiles(directory=dirname(abspath(__file__)) + "/static"), name="static")
 
+# setup routers
 app.include_router(search.router)
 app.include_router(disease_to_gene.router)
 app.include_router(disease_to_phenotype.router)

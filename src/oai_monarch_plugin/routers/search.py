@@ -74,7 +74,6 @@ async def search_entity(
 
     search_results = []
     for item in response_json.get("items", []):
-        print(item)
         search_results.append(
             SearchResultItem(
                 id=item.get("id"),
