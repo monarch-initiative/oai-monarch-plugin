@@ -1,4 +1,5 @@
 import httpx
+from loguru import logger
 
 from .config import settings
 
@@ -15,7 +16,14 @@ async def get_association_all(category: str, entity: str, limit: int, offset: in
     params = {"category": category, "entity": entity, "limit": limit, "offset": offset}
 
     async with httpx.AsyncClient() as client:
-        print("Calling: " + str(client.build_request("GET", api_url, params=params).url))
+        logger.info({
+            "event": "monarch_api_call",
+            "url": str(client.build_request("GET", api_url, params=params).url),
+            "params": params,
+            "api_url": api_url,
+            "method": "GET"
+        })
+        
         response = await client.get(api_url, params=params)
 
     response_json = response.json()

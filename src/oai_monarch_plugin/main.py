@@ -11,7 +11,10 @@ import httpx
 from fastapi import FastAPI, Path, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
+
+# local imports
+from .logger_config import configure_logger
+from .middlewares import LoggingMiddleware
 
 from .routers import (
     disease_to_gene,
@@ -23,10 +26,14 @@ from .routers import (
     search,
 )
 
-BASE_API_URL = "https://api-dev.monarchinitiative.org/v3/api"
-
+# setup base app
 app = FastAPI()
 
+# setup logging
+configure_logger()
+app.middleware("http")(LoggingMiddleware())
+
+# setup CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
