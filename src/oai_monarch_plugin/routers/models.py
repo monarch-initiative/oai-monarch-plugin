@@ -41,7 +41,10 @@ class Disease(BaseModel):
 
 
 class DiseaseAssociation(BaseModel):
-    disease: Disease
+    disease: Disease = Field(..., description="The Disease object.")
+    type: Optional[str] = Field(
+        None, description="The type of the association (causal or correlated)."
+    )
 
 
 class DiseaseAssociations(BaseModel):
