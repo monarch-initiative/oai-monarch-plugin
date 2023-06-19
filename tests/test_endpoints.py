@@ -21,6 +21,25 @@ def test_search_endpoint():
         assert "description" in result
 
 
+def test_get_entities_endpoint():
+    response = test_client.get("/entity?ids=MONDO:0005148&ids=MONDO:0009061")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) == 2
+
+    for entity in data:
+        assert "id" in entity
+        assert "category" in entity
+        assert "name" in entity
+        assert "description" in entity
+        assert "association_counts" in entity
+
+        for association_count in entity["association_counts"]:
+            assert "label" in association_count
+            assert "count" in association_count
+
+
 def test_gene_to_phenotype():
     response = test_client.get("/gene-phenotypes?gene_id=HGNC:1884&limit=2")
 

@@ -19,6 +19,7 @@ from .routers import (
     phenotype_to_disease,
     phenotype_to_gene,
     search,
+    entity
 )
 
 # setup base app
@@ -47,6 +48,7 @@ app.mount("/static", StaticFiles(directory=dirname(abspath(__file__)) + "/static
 
 # setup routers
 app.include_router(search.router)
+app.include_router(entity.router)
 app.include_router(disease_to_gene.router)
 app.include_router(disease_to_phenotype.router)
 app.include_router(gene_to_disease.router)
