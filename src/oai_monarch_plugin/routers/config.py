@@ -10,5 +10,11 @@ class Settings(BaseSettings):
         else "https://api-v3.monarchinitiative.org/v3/api"
     )
 
+    monarch_ui_url: str = (
+        os.getenv("MONARCH_UI_URL")
+        if os.getenv("MONARCH_UI_URL")
+        else "https://monarchinitiative.org"
+    )
+
 
 settings = Settings()

@@ -43,10 +43,12 @@ async def get_disease_gene_associations(
     for item in genericAssociations.get("items", []):
         gene = Gene(
             # in a GeneToDiseaseAssociation, the gene is the subject
-            id=item.get("subject"),
+            gene_id=item.get("subject"),
             label=item.get("subject_label"),
         )
-        assoc = GeneAssociation(id=item.get("id"), gene=gene)
+        assoc = GeneAssociation(gene=gene)
         associations.append(assoc)
 
-    return GeneAssociations(associations=associations, total=genericAssociations.get("total", 0))
+    return GeneAssociations(associations = associations, 
+                            total = genericAssociations.get("total", 0), 
+                            gene_url_template = settings.monarch_ui_url + "/gene/{gene_id}")

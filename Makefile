@@ -15,7 +15,7 @@ start-dev:
 	poetry run uvicorn oai_monarch_plugin.main:app --host 0.0.0.0 --port 3434 --reload
 
 test:
-	poetry run pytest -v tests
+	poetry run pytest -v tests --capture=no
 
 export-requirements:
 	poetry export -f requirements.txt --output requirements.txt

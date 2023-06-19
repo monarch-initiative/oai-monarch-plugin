@@ -32,6 +32,7 @@ def test_gene_to_phenotype():
     # Ensure response is valid JSON
     data = response.json()
 
+
     # Check for presence of 'associations' and 'numFound' in the response
     assert "associations" in data, "Response body did not contain expected 'associations' field"
     assert "total" in data, "Response body did not contain expected 'total' field"
@@ -43,11 +44,10 @@ def test_gene_to_phenotype():
 
     # Check structure of each association
     for association in data["associations"]:
-        assert "id" in association
         assert "frequency_qualifier" in association
         assert "onset_qualifier" in association
         assert "phenotype" in association
-        assert "id" in association["phenotype"]
+        assert "phenotype_id" in association["phenotype"]
         assert "label" in association["phenotype"]
 
 
@@ -73,9 +73,8 @@ def test_disease_to_gene():
 
     # Check structure of each association
     for association in data["associations"]:
-        assert "id" in association
         assert "gene" in association
-        assert "id" in association["gene"]
+        assert "gene_id" in association["gene"]
         assert "label" in association["gene"]
 
 
@@ -101,11 +100,10 @@ def test_disease_to_phenotype():
 
     # Check structure of each association
     for association in data["associations"]:
-        assert "id" in association
         assert "frequency_qualifier" in association
         assert "onset_qualifier" in association
         assert "phenotype" in association
-        assert "id" in association["phenotype"]
+        assert "phenotype_id" in association["phenotype"]
         assert "label" in association["phenotype"]
 
 
@@ -131,9 +129,8 @@ def test_gene_to_disease():
 
     # Check structure of each association
     for association in data["associations"]:
-        assert "id" in association
         assert "disease" in association
-        assert "id" in association["disease"]
+        assert "disease_id" in association["disease"]
         assert "label" in association["disease"]
 
 
@@ -159,9 +156,8 @@ def test_phenotype_to_disease():
 
     # Check structure of each association
     for association in data["associations"]:
-        assert "id" in association
         assert "disease" in association
-        assert "id" in association["disease"]
+        assert "disease_id" in association["disease"]
         assert "label" in association["disease"]
 
 
@@ -188,9 +184,8 @@ def test_phenotype_to_gene():
 
     # Check structure of each association
     for association in data["associations"]:
-        assert "id" in association
         assert "gene" in association
-        assert "id" in association["gene"]
+        assert "gene_id" in association["gene"]
         assert "label" in association["gene"]
 
 

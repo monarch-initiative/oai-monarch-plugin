@@ -41,9 +41,11 @@ async def get_gene_phenotype_associations(
 
     associations = []
     for item in genericAssociations.get("items", []):
-        phenotype = Phenotype(id=item.get("object"), label=item.get("object_label"))
+        phenotype = Phenotype(
+            phenotype_id=item.get("object"), 
+            label=item.get("object_label")
+        )
         assoc = PhenotypeAssociation(
-            id=item.get("id"),
             frequency_qualifier=item.get("frequency_qualifier"),
             onset_qualifier=item.get("onset_qualifier"),
             phenotype=phenotype,
@@ -51,5 +53,7 @@ async def get_gene_phenotype_associations(
         associations.append(assoc)
 
     return PhenotypeAssociations(
-        associations=associations, total=genericAssociations.get("total", 0)
+        associations=associations, 
+        total=genericAssociations.get("total", 0),
+        phenotype_url_template = settings.monarch_ui_url + "/phenotype/{phenotype_id}"
     )
