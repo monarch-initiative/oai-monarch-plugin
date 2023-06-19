@@ -32,23 +32,41 @@ async def get_disease_gene_associations(
     limit: Optional[int] = Query(10, description="The maximum number of associations to return."),
     offset: Optional[int] = Query(1, description="Offset for pagination of results"),
 ) -> GeneAssociations:
-    genericAssociations = await get_association_all(
+    
+    causalAssociations = await get_association_all(
         category="biolink:CausalGeneToDiseaseAssociation",
         entity=disease_id,
         limit=limit,
         offset=offset,
     )
 
+    correlatedAssociations = await get_association_all(
+        category="biolink:CorrelatedGeneToDiseaseAssociation",
+        entity=disease_id,
+        limit=limit,
+        offset=offset,
+    )
+
     associations = []
-    for item in genericAssociations.get("items", []):
+
+    for item in causalAssociations.get("items", []):
         gene = Gene(
             # in a GeneToDiseaseAssociation, the gene is the subject
             gene_id=item.get("subject"),
             label=item.get("subject_label"),
         )
-        assoc = GeneAssociation(gene=gene)
+        assoc = GeneAssociation(gene=gene, type="causal")
+        associations.append(assoc)
+
+    for item in correlatedAssociations.get("items", []):
+        gene = Gene(
+            # in a GeneToDiseaseAssociation, the gene is the subject
+            gene_id=item.get("subject"),
+            label=item.get("subject_label"),
+        )
+        assoc = GeneAssociation(gene=gene, type="correlated")
         associations.append(assoc)
 
     return GeneAssociations(associations = associations, 
-                            total = genericAssociations.get("total", 0), 
+                            total = causalAssociations.get("total", 0) + correlatedAssociations.get("total", 0),
                             gene_url_template = settings.monarch_ui_url + "/gene/{gene_id}")
