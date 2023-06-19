@@ -43,10 +43,12 @@ async def get_phenotype_disease_associations(
     for item in genericAssociations.get("items", []):
         disease = Disease(
             # in a DiseaseToPhenotypicFeatureAssociation, the disease is the subject
-            id=item.get("subject"),
+            disease_id=item.get("subject"),
             label=item.get("subject_label"),
         )
-        assoc = DiseaseAssociation(id=item.get("id"), disease=disease)
+        assoc = DiseaseAssociation(disease=disease)
         associations.append(assoc)
 
-    return DiseaseAssociations(associations=associations, total=genericAssociations.get("total", 0))
+    return DiseaseAssociations(associations = associations, 
+                               total = genericAssociations.get("total", 0),
+                               disease_url_template = settings.monarch_ui_url + "/disease/{disease_id}")
