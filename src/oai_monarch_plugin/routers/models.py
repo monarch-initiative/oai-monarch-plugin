@@ -82,9 +82,9 @@ class AssociationCount(BaseModel):
 
 class Entity(BaseModel):
     id: str = Field(..., description="The ontology identifier of the entity.", example="MONDO:0009061")
-    category: str = Field(..., description="The category of the entity.", example="biolink:Disease")
-    name: str = Field(..., description="The human-readable label of the entity.", example="cystic fibrosis")
+    category: List[str] = Field(..., description="The categories of the entity.", example=["biolink:Disease"])
+    name: Optional[str] = Field(None, description="The human-readable label of the entity.", example="cystic fibrosis")
     description: Optional[str] = Field(None, description="The description of the entity.")
-    symbol: Optional[str] = None
-    synonym: List = []
-    association_counts: List[AssociationCount]
+    symbol: Optional[str] = Field(None, description="The symbol of the entity, usually a short name like FBN1.")
+    synonym: List[str] = Field(..., description="The synonyms of the entity.")
+    association_counts: List[AssociationCount] = Field(..., description="Counts of associations between this entity and other entities of different types.")
