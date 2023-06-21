@@ -13,6 +13,7 @@ from .middlewares import LoggingMiddleware
 
 from .routers import (
     disease_to_gene,
+    phenotype_profile_search,
     disease_to_phenotype,
     gene_to_disease,
     gene_to_phenotype,
@@ -48,6 +49,7 @@ app.mount("/static", StaticFiles(directory=dirname(abspath(__file__)) + "/static
 
 # setup routers
 app.include_router(search.router)
+app.include_router(phenotype_profile_search.router)
 app.include_router(entity.router)
 app.include_router(disease_to_gene.router)
 app.include_router(disease_to_phenotype.router)
