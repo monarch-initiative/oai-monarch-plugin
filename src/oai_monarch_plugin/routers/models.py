@@ -70,3 +70,21 @@ class GeneAssociations(BaseModel):
     )
     total: int = Field(..., description="The total number of gene associations available.")
     gene_url_template: str = Field(..., description="URL template for constructing links to the Monarch Initiative website.")
+
+
+
+
+
+class AssociationCount(BaseModel):
+    label: str = Field(..., description="The type of the associations (e.g. Disease or Gene)", example="Causal")
+    count: int = Field(..., description="The number of associations of that type.")
+
+
+class Entity(BaseModel):
+    id: str = Field(..., description="The ontology identifier of the entity.", example="MONDO:0009061")
+    category: List[str] = Field(..., description="The categories of the entity.", example=["biolink:Disease"])
+    name: Optional[str] = Field(None, description="The human-readable label of the entity.", example="cystic fibrosis")
+    description: Optional[str] = Field(None, description="The description of the entity.")
+    symbol: Optional[str] = Field(None, description="The symbol of the entity, usually a short name like FBN1.")
+    synonym: List[str] = Field(..., description="The synonyms of the entity.")
+    association_counts: List[AssociationCount] = Field(..., description="Counts of associations between this entity and other entities of different types.")
