@@ -4,7 +4,11 @@ from fastapi import APIRouter, Query
 from pydantic import BaseModel, Field
 
 
-class Phenotype(BaseModel):
+class PublicationBacked(BaseModel):
+    publications: List[Dict[str, str]] = Field([], description="List of related publications and associated metadata.")
+
+
+class Phenotype(PublicationBacked):
     phenotype_id: str = Field(
         ..., description="The ontology identifier of the phenotype.", example="HP:0002721"
     )
@@ -13,7 +17,7 @@ class Phenotype(BaseModel):
     )
 
 
-class PhenotypeAssociation(BaseModel):
+class PhenotypeAssociation(PublicationBacked):
     frequency_qualifier: Optional[str] = Field(
         None, description="The frequency qualifier of the association."
     )
@@ -28,10 +32,10 @@ class PhenotypeAssociations(BaseModel):
         ..., description="The list of PhenotypeAssociation objects."
     )
     total: int = Field(..., description="The total number of phenotype associations available.")
-    phenotype_url_template: str = Field(..., description="URL template for constructing links to the Monarch Initiative website.")
+    phenotype_url_template: str = Field(..., description="URL template for constructing links to the Monarch Initiative website.", example="https://monarchinitiative.org/phenotype/{phenotype_id}")
 
 
-class Disease(BaseModel):
+class Disease(PublicationBacked):
     disease_id: str = Field(
         ..., description="The ontology identifier of the disease.", example="MONDO:0009061"
     )
@@ -40,7 +44,7 @@ class Disease(BaseModel):
     )
 
 
-class DiseaseAssociation(BaseModel):
+class DiseaseAssociation(PublicationBacked):
     disease: Disease = Field(..., description="The Disease object.")
     type: Optional[str] = Field(
         None, description="The type of the association (causal or correlated)."
@@ -52,15 +56,15 @@ class DiseaseAssociations(BaseModel):
         ..., description="The list of DiseaseAssociation objects."
     )
     total: int = Field(..., description="The total number of disease associations available.")
-    disease_url_template: str = Field(..., description="URL template for constructing links to the Monarch Initiative website.")
+    disease_url_template: str = Field(..., description="URL template for constructing links to the Monarch Initiative website.", example="https://monarchinitiative.org/disease/{disease_id}")
 
 
-class Gene(BaseModel):
+class Gene(PublicationBacked):
     gene_id: str = Field(..., description="The ontology identifier of the gene.", example="HGNC:1884")
     label: str = Field(..., description="The human-readable label of the gene.", example="CFTR")
 
 
-class GeneAssociation(BaseModel):
+class GeneAssociation(PublicationBacked):
     gene: Gene
 
 
@@ -69,7 +73,7 @@ class GeneAssociations(BaseModel):
         ..., description="The list of GeneAssociation objects."
     )
     total: int = Field(..., description="The total number of gene associations available.")
-    gene_url_template: str = Field(..., description="URL template for constructing links to the Monarch Initiative website.")
+    gene_url_template: str = Field(..., description="URL template for constructing links to the Monarch Initiative website.", example="https://monarchinitiative.org/gene/{gene_id}")
 
 
 
