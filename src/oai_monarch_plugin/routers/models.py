@@ -84,7 +84,7 @@ class AssociationCount(BaseModel):
     count: int = Field(..., description="The number of associations of that type.")
 
 
-class Entity(BaseModel):
+class Entity(PublicationBacked):
     id: str = Field(..., description="The ontology identifier of the entity.", example="MONDO:0009061")
     category: List[str] = Field(..., description="The categories of the entity.", example=["biolink:Disease"])
     name: Optional[str] = Field(None, description="The human-readable label of the entity.", example="cystic fibrosis")
