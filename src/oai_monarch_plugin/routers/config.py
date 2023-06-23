@@ -16,5 +16,10 @@ class Settings(BaseSettings):
         else "https://monarchinitiative.org"
     )
 
+    monarch_api_v2_url: str = (
+        os.getenv("MONARCH_API_V2_URL")
+        if os.getenv("MONARCH_API_V2_URL")
+        else "https://api.monarchinitiative.org/api"
+    )
 
 settings = Settings()
