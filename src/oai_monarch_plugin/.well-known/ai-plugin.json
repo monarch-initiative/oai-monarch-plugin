@@ -9,10 +9,10 @@
     },
     "api": {
       "type": "openapi",
-      "url": "http://localhost:3434/openapi.json",
+      "url": "https://oai-monarch-plugin.monarchinitiative.org/openapi.json",
       "is_user_authenticated": false
     },
-    "logo_url": "http://localhost:3434/static/logo.png",
+    "logo_url": "https://oai-monarch-plugin.monarchinitiative.org/static/logo.png",
     "contact_email": "shawn@tislab.org",
     "legal_info_url": "https://monarchinitiative.org/about/disclaimer"
   }
