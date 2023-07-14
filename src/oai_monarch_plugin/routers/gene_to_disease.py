@@ -49,12 +49,12 @@ async def get_gene_disease_associations(
     associations = []
     for item in causalAssociations.get("items", []):
         disease = Disease(disease_id=item.get("object"), label=item.get("object_label"), type="causal")
-        assoc = DiseaseAssociation(disease=disease)
+        assoc = DiseaseAssociation(disease=disease, metadata={"relationship": "causal"})
         associations.append(assoc)
 
     for item in correlatedAssociations.get("items", []):
-        disease = Disease(disease_id=item.get("object"), label=item.get("object_label"), type="correlated")
-        assoc = DiseaseAssociation(disease=disease)
+        disease = Disease(disease_id=item.get("object"), label=item.get("object_label"))
+        assoc = DiseaseAssociation(disease=disease, metadata={"relationship": "correlated"})
         associations.append(assoc)
 
     return DiseaseAssociations(associations=associations, 
