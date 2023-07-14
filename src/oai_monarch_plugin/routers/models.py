@@ -7,8 +7,11 @@ from pydantic import BaseModel, Field
 class PublicationBacked(BaseModel):
     publications: List[Dict[str, str]] = Field([], description="List of related publications and associated metadata.")
 
+class HasMetadata(BaseModel):
+    metadata: Dict[str, Any] = Field({}, description="Other metadata associaciated with the entity or association.")
 
-class Phenotype(PublicationBacked):
+
+class Phenotype(PublicationBacked, HasMetadata):
     phenotype_id: str = Field(
         ..., description="The ontology identifier of the phenotype.", example="HP:0002721"
     )
@@ -17,13 +20,13 @@ class Phenotype(PublicationBacked):
     )
 
 
-class PhenotypeAssociation(PublicationBacked):
-    frequency_qualifier: Optional[str] = Field(
-        None, description="The frequency qualifier of the association."
-    )
-    onset_qualifier: Optional[str] = Field(
-        None, description="The onset qualifier of the association."
-    )
+class PhenotypeAssociation(PublicationBacked, HasMetadata):
+    # frequency_qualifier: Optional[str] = Field(
+    #     None, description="The frequency qualifier of the association."
+    # )
+    # onset_qualifier: Optional[str] = Field(
+    #     None, description="The onset qualifier of the association."
+    # )
     phenotype: Phenotype
 
 
@@ -35,7 +38,7 @@ class PhenotypeAssociations(BaseModel):
     phenotype_url_template: str = Field(..., description="URL template for constructing links to the Monarch Initiative website.", example="https://monarchinitiative.org/phenotype/{phenotype_id}")
 
 
-class Disease(PublicationBacked):
+class Disease(PublicationBacked, HasMetadata):
     disease_id: str = Field(
         ..., description="The ontology identifier of the disease.", example="MONDO:0009061"
     )
@@ -44,7 +47,7 @@ class Disease(PublicationBacked):
     )
 
 
-class DiseaseAssociation(PublicationBacked):
+class DiseaseAssociation(PublicationBacked, HasMetadata):
     disease: Disease = Field(..., description="The Disease object.")
     type: Optional[str] = Field(
         None, description="The type of the association (causal or correlated)."
@@ -59,12 +62,12 @@ class DiseaseAssociations(BaseModel):
     disease_url_template: str = Field(..., description="URL template for constructing links to the Monarch Initiative website.", example="https://monarchinitiative.org/disease/{disease_id}")
 
 
-class Gene(PublicationBacked):
+class Gene(PublicationBacked, HasMetadata):
     gene_id: str = Field(..., description="The ontology identifier of the gene.", example="HGNC:1884")
     label: str = Field(..., description="The human-readable label of the gene.", example="CFTR")
 
 
-class GeneAssociation(PublicationBacked):
+class GeneAssociation(PublicationBacked, HasMetadata):
     gene: Gene
 
 
@@ -76,15 +79,12 @@ class GeneAssociations(BaseModel):
     gene_url_template: str = Field(..., description="URL template for constructing links to the Monarch Initiative website.", example="https://monarchinitiative.org/gene/{gene_id}")
 
 
-
-
-
 class AssociationCount(BaseModel):
     label: str = Field(..., description="The type of the associations (e.g. Disease or Gene)", example="Causal")
     count: int = Field(..., description="The number of associations of that type.")
 
 
-class Entity(PublicationBacked):
+class Entity(PublicationBacked, HasMetadata):
     id: str = Field(..., description="The ontology identifier of the entity.", example="MONDO:0009061")
     category: List[str] = Field(..., description="The categories of the entity.", example=["biolink:Disease"])
     name: Optional[str] = Field(None, description="The human-readable label of the entity.", example="cystic fibrosis")

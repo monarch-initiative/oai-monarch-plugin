@@ -46,8 +46,7 @@ async def get_gene_phenotype_associations(
             label=item.get("object_label")
         )
         assoc = PhenotypeAssociation(
-            frequency_qualifier=item.get("frequency_qualifier"),
-            onset_qualifier=item.get("onset_qualifier"),
+            metadata = {"frequency_qualifier": item.get("frequency_qualifier"), "onset_qualifier": item.get("onset_qualifier")},
             phenotype=phenotype,
         )
         associations.append(assoc)

@@ -80,8 +80,9 @@ def test_gene_to_phenotype():
 
     # Check structure of each association
     for association in data["associations"]:
-        assert "frequency_qualifier" in association
-        assert "onset_qualifier" in association
+        assert "metadata" in association
+        assert "onset_qualifier" in association["metadata"]
+        assert "frequency_qualifier" in association["metadata"]
         assert "phenotype" in association
         assert "phenotype_id" in association["phenotype"]
         assert "label" in association["phenotype"]
@@ -137,8 +138,9 @@ def test_disease_to_phenotype():
 
     # Check structure of each association
     for association in data["associations"]:
-        assert "frequency_qualifier" in association
-        assert "onset_qualifier" in association
+        assert "metadata" in association
+        assert "onset_qualifier" in association["metadata"]
+        assert "frequency_qualifier" in association["metadata"]
         assert "phenotype" in association
         assert "phenotype_id" in association["phenotype"]
         assert "label" in association["phenotype"]

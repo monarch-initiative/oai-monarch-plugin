@@ -50,6 +50,6 @@ async def get_entities(ids: List[str] = Query(..., description="List of entity i
                 association_counts.append(association_count)
 
             
-            entities.append(Entity(id=id, category=category, name=name, description=description, symbol=symbol, synonym=synonym, association_counts=association_counts))
+            entities.append(Entity(id=id, category=[category], name=name, description=description, symbol=symbol, synonym=synonym, association_counts=association_counts))
             
     return entities

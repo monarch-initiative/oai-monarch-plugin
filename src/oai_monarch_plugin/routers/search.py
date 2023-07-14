@@ -78,7 +78,7 @@ async def search_entity(
             SearchResultItem(
                 id=item.get("id"),
                 name=item.get("name"),
-                categories=item.get("category"),
+                categories=[item.get("category")],
                 description=item.get("description"),
             )
         )
