@@ -7,5 +7,5 @@ COPY . .
 RUN pip install poetry
 RUN make install export-requirements
 
-CMD ["make", "start"]
+CMD ["make", "start-prod"]
 
