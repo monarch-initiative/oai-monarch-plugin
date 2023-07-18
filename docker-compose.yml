@@ -1,6 +1,8 @@
 services:
   oai-monarch-plugin:
     image: oai-monarch-plugin:latest
+    environment:
+      - OAI_PLUGIN_HOST_PORT=https://oai-monarch-plugin.monarchinitiative.org
     restart: unless-stopped
     ports:
       - 8080:8080

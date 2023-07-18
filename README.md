@@ -12,28 +12,16 @@ Join the waitlist [here](https://openai.com/waitlist/plugins)
 
 It may be possible to grant permissions broadly across an organization? https://community.openai.com/t/developer-access-for-colleagues/157315
 
-### Run server/dev server/tests
+### Run dev server
 
-Output of `make help`:
-
-```bash
-make all -- installs requirements, exports requirements.txt, runs production server
-make dev -- installs requirements, runs hot-restart dev server
-make test -- runs tests
-make start -- runs production server
-make start-dev -- runs hot-restart dev server
-make export-requirements -- exports requirements.txt
-make help -- show this help
-```
-
-The dev server currently runs on 3434, production 8080.
+Run the dev server with `make dev`, which runs on localhost port 3434.
 
 Check it works:
 
 - http://localhost:3434/.well-known/ai-plugin.json
 - http://localhost:3434/docs
 
-### Register
+### Test plugin
 
 Go to https://chat.openai.com/
 
@@ -46,6 +34,33 @@ Enter `localhost:3434`
 You should see the plugin activated
 
 If you run into difficulties, see https://platform.openai.com/docs/plugins/introduction
+
+### Production deployment
+
+Production requires `docker` and is run via `make prod`. 
+
+The production server runs on port 8080 via docker and assumes SSL termination happens upstream.
+To properly act as a plugin, the path `/.well-known/ai-plugin.json` must include the URL of the API, which in prod is `https://oai-monarch-plugin.monarchinitiative.org`, and in dev is `http://localhost:3434`. These are configured by environment variables in the `docker-compose.yml` and `Makefile` respectively.
+
+Output of `make help`:
+
+```bash
+DEV:
+  make dev -- installs requirements, runs hot-restart dev server
+  make test -- runs tests
+  make queries -- runs tests against dev server (not via pytest, assumes dev server is running)
+  
+PROD:
+  make prod -- installs requirements, exports requirements.txt, builds and runs dockerized prod server
+  make docker-build -- build docker container
+  make docker-run -- run make start-prod in docker via docker-compose
+  make start-prod -- runs production server
+  
+ETC:
+  make install -- run poetry install
+  make export-requirements -- exports requirements.txt
+  make help -- show this help
+```
 
 # Acknowledgements
 

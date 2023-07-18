@@ -6,6 +6,8 @@ from os.path import abspath, dirname
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+import json
+import os
 
 # local imports
 from .logger_config import configure_logger
@@ -39,12 +41,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Serve static files needed for OpenAI plugin
-app.mount(
-    "/.well-known",
-    StaticFiles(directory=dirname(abspath(__file__)) + "/.well-known"),
-    name="well-known",
-)
+# dynamically generate ai-plugin.json with dev/prod hostnames
+@app.get("/.well-known/ai-plugin.json")
+async def get_ai_plugin():
+    # Load the json file
+    with open(f"{dirname(abspath(__file__))}/.well-known/ai-plugin.json", "r") as f:
+        data = json.load(f)
+    
+    # Modify fields based on environment variables
+    if os.getenv("OAI_PLUGIN_HOST_PORT"):
+        data['api']['url'] = f"{os.getenv('OAI_PLUGIN_HOST_PORT')}/openapi.json"
+        data['logo_url'] = f"{os.getenv('OAI_PLUGIN_HOST_PORT')}/static/logo.png"
+
+    return data
+
 app.mount("/static", StaticFiles(directory=dirname(abspath(__file__)) + "/static"), name="static")
 
 # setup routers
