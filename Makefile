@@ -15,6 +15,7 @@ docker-build:
 	docker build -t oai-monarch-plugin:latest .
 
 start-prod:
+	# OAI_PLUGIN_HOST_PORT is set in the docker-compose.yml for production
 	poetry run gunicorn oai_monarch_plugin.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8080
 
 
@@ -22,7 +23,7 @@ start-prod:
 dev: install start-dev
 
 start-dev:
-	poetry run uvicorn oai_monarch_plugin.main:app --host 0.0.0.0 --port 3434 --reload
+	OAI_PLUGIN_HOST_PORT=http://localhost:3434 poetry run uvicorn oai_monarch_plugin.main:app --host 0.0.0.0 --port 3434 --reload
 
 test:
 	poetry run pytest -v tests --capture=no
