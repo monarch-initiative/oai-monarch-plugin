@@ -28,7 +28,7 @@ router = APIRouter()
 async def get_gene_disease_associations(
     gene_id: str = Query(..., description="The identifier of the gene.", example="HGNC:1884"),
     limit: Optional[int] = Query(10, description="The maximum number of associations to return."),
-    offset: Optional[int] = Query(1, description="Offset for pagination of results"),
+    offset: Optional[int] = Query(0, description="Offset for pagination of results"),
 ) -> DiseaseAssociations:
     
     causalAssociations = await get_association_all(

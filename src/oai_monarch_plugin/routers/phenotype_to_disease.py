@@ -29,8 +29,8 @@ async def get_phenotype_disease_associations(
     phenotype_id: str = Query(
         ..., description="The ontology identifier of the phenotype.", example="HP:0002721"
     ),
-    limit: Optional[int] = 10,
-    offset: Optional[int] = 1,
+    limit: Optional[int] = Query(10, description="The maximum number of associations to return."),
+    offset: Optional[int] = Query(0, description="Offset for pagination of results"),
 ) -> DiseaseAssociations:
     genericAssociations = await get_association_all(
         category="biolink:DiseaseToPhenotypicFeatureAssociation",
