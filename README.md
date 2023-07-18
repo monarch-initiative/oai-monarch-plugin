@@ -25,13 +25,11 @@ Check it works:
 
 Go to https://chat.openai.com/
 
-If you have plugin access, you'll see an option
-
-Select the plugin model from the top drop down, then select “Plugins”, “Plugin Store”, and finally “Install an unverified plugin” or “Develop your own plugin”.
+If you have plugin access, you'll see an option to select the GPT-4 plugin model from the top drop down, then select “Plugins”, “Plugin Store”, and finally “Install an unverified plugin” or “Develop your own plugin”.
 
 Enter `localhost:3434`
 
-You should see the plugin activated
+You should see the plugin activated.
 
 If you run into difficulties, see https://platform.openai.com/docs/plugins/introduction
 
