@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 import httpx
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, HTTPException, status
 from pydantic import BaseModel, Field
 from loguru import logger
 
@@ -41,6 +41,9 @@ async def search_phenotype_profiles(
     ),
     limit: Optional[int] = Query(10, description="The maximum number of search results to return."),
 ) -> MatchItems:
+    
+    raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Endpoint temporarily disabled.")
+
     api_url = f"{BASE_API_URL}/sim/search"
     
     is_feature_set = all('HP:' in id for id in ids)
