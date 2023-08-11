@@ -117,7 +117,7 @@ def test_disease_to_gene():
 
 
 def test_disease_to_phenotype():
-    response = test_client.get("/disease-phenotypes?disease_id=MONDO:0005148&limit=2")
+    response = test_client.get("/disease-phenotypes?disease_id=MONDO:0008393&limit=200")
 
     # Basic assertions
     assert (

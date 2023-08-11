@@ -42,11 +42,29 @@ async def get_disease_phenotype_associations(
     associations = []
     for item in genericAssociations.get("items", []):
         phenotype = Phenotype(phenotype_id=item.get("object"), label=item.get("object_label"))
+        
         assoc = PhenotypeAssociation(
             metadata = {"frequency_qualifier": item.get("frequency_qualifier"), "onset_qualifier": item.get("onset_qualifier")},
-            phenotype=phenotype
+            phenotype=phenotype,
+            publications = []
         )
+
+        for pub in item.get("publications", []):
+            pub_dict = {"id": pub}
+            if pub.startswith("ISBN"):
+                clean_isbn = ''.join(filter(str.isdigit, pub))
+                pub_dict["url"] = f"https://openlibrary.org/isbn/{clean_isbn}"
+            if pub.startswith("OMIM:"):
+                pub_dict["url"] = f"https://www.omim.org/entry/{pub.split(':')[1]}"
+            if pub.startswith("PMID:"):
+                pub_dict["url"] = f"https://pubmed.ncbi.nlm.nih.gov/{pub.split(':')[1]}"
+            assoc.publications.append(pub_dict)
         associations.append(assoc)
+
+    import pprint
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(associations)
+
 
     return PhenotypeAssociations(
         associations = associations, 
