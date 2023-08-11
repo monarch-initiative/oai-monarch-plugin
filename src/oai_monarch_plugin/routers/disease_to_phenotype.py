@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 from .config import settings
 from .models import *
-from .utils import get_association_all
+from .utils import get_association_all, get_pub_info
 
 BASE_API_URL = settings.monarch_api_url
 
@@ -50,15 +50,8 @@ async def get_disease_phenotype_associations(
         )
 
         for pub in item.get("publications", []):
-            pub_dict = {"id": pub}
-            if pub.startswith("ISBN"):
-                clean_isbn = ''.join(filter(str.isdigit, pub))
-                pub_dict["url"] = f"https://openlibrary.org/isbn/{clean_isbn}"
-            if pub.startswith("OMIM:"):
-                pub_dict["url"] = f"https://www.omim.org/entry/{pub.split(':')[1]}"
-            if pub.startswith("PMID:"):
-                pub_dict["url"] = f"https://pubmed.ncbi.nlm.nih.gov/{pub.split(':')[1]}"
-            assoc.publications.append(pub_dict)
+            assoc.publications.append(get_pub_info(pub))
+            
         associations.append(assoc)
 
     import pprint
