@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 from .config import settings
 from .models import *
-from .utils import get_association_all
+from .utils import get_association_all, get_pub_info
 
 BASE_API_URL = settings.monarch_api_url
 
@@ -42,11 +42,22 @@ async def get_disease_phenotype_associations(
     associations = []
     for item in genericAssociations.get("items", []):
         phenotype = Phenotype(phenotype_id=item.get("object"), label=item.get("object_label"))
+        
         assoc = PhenotypeAssociation(
             metadata = {"frequency_qualifier": item.get("frequency_qualifier"), "onset_qualifier": item.get("onset_qualifier")},
-            phenotype=phenotype
+            phenotype=phenotype,
+            publications = []
         )
+
+        for pub in item.get("publications", []):
+            assoc.publications.append(get_pub_info(pub))
+            
         associations.append(assoc)
+
+    import pprint
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(associations)
+
 
     return PhenotypeAssociations(
         associations = associations, 

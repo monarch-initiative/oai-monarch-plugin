@@ -1,7 +1,9 @@
 import os
 
 from pydantic import BaseSettings
+from dotenv import load_dotenv
 
+load_dotenv()
 
 class Settings(BaseSettings):
     monarch_api_url: str = (
@@ -20,6 +22,12 @@ class Settings(BaseSettings):
         os.getenv("MONARCH_API_V2_URL")
         if os.getenv("MONARCH_API_V2_URL")
         else "https://api.monarchinitiative.org/api"
+    )
+
+    ncbi_api_key: str = (
+        os.getenv("NCBI_API_KEY")
+        if os.getenv("NCBI_API_KEY")
+        else None
     )
 
 settings = Settings()

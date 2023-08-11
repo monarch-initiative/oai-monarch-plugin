@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 from .config import settings
 from .models import *
-from .utils import get_association_all
+from .utils import get_association_all, get_pub_info
 
 BASE_API_URL = settings.monarch_api_url
 
@@ -55,7 +55,12 @@ async def get_gene_disease_associations(
     for item in correlatedAssociations.get("items", []):
         disease = Disease(disease_id=item.get("object"), label=item.get("object_label"))
         assoc = DiseaseAssociation(disease=disease, metadata={"relationship": "correlated"})
+
+        for pub in item.get("publications", []):
+            assoc.publications.append(get_pub_info(pub))
+            
         associations.append(assoc)
+
 
     return DiseaseAssociations(associations=associations, 
                                total=causalAssociations.get("total", 0) + correlatedAssociations.get("total", 0),

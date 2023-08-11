@@ -1,5 +1,7 @@
 import httpx
 from loguru import logger
+import eutils
+from isbnlib import canonical, meta
 
 from .config import settings
 
@@ -28,3 +30,69 @@ async def get_association_all(category: str, entity: str, limit: int, offset: in
 
     response_json = response.json()
     return response_json
+
+
+def get_pub_info(pub: str) -> dict:
+    """Get publication information for a given publication ID.
+    The response will be a dictionary with entries for id, url, and title.
+    """
+
+    pub_dict = {"id": pub}
+
+    if pub.startswith("ISBN"):
+        logger.info({
+            "event": "isbn_lookup",
+            "id": pub
+        })
+
+        canonical_isbn = canonical(pub.split(':')[1])
+        data = meta(canonical_isbn)
+
+        authors = data.get("Authors", [None])
+        author = None
+        if len(authors) == 1:
+            author = authors[0]
+        else:
+            author = authors[0] + " et al."
+
+        pub_dict.update({
+            "title": data.get("Title", None),
+            "author(s)": author,
+            "year": data.get("Year", None),
+            "publisher": data.get("Publisher", None),
+            "url": f"https://openlibrary.org/isbn/{canonical_isbn}"
+        })
+
+
+    elif pub.startswith("OMIM"):
+        pub_dict["url"] = f"https://www.omim.org/entry/{pub.split(':')[1]}"
+        pub_dict["title"] = "OMIM Record"
+
+
+    elif pub.startswith("PMID"):
+        logger.info({
+            "event": "pubmed_lookup",
+            "id": pub
+        })
+
+        ec = eutils.Client(api_key = settings.ncbi_api_key)
+        pmid = pub.split(':')[1]
+        data = next(iter(ec.efetch(db='pubmed', id = pmid)))
+
+        authors = data.authors
+        author = None
+        if len(authors) == 1:
+            author = authors[0]
+        else:
+            author = authors[0] + " et al."
+
+        pub_dict.update({
+            "title": data.title,
+            "author(s)": author,
+            "year": data.year,
+            "journal": data.jrnl,
+            "url": f"https://pubmed.ncbi.nlm.nih.gov/{pmid}"
+        })
+        print(pub_dict)
+        
+    return pub_dict
