@@ -1,16 +1,35 @@
-# oai-monarch-plugin
+# Monarch Initiative ChatGPT Plugin
 
-ChatGPT plugin and wrapper for Monarch  API.
+The Monarch Initiative ChatGPT plugin is available to all [ChatGPT Plus subscribers](https://openai.com/blog/chatgpt-plus) through the ChatGPT Plugin store. For more information about the Monarch ChatGPT plugin, see our [blog post](https://monarchinit.medium.com/knowledge-backed-ai-with-monarch-a-match-made-in-heaven-a8296eec6b9f).
 
-## How to run
+## Enabling the Plugin
+
+If you are an OpenAI ChatGPT Plus subscriber, then you have access to the more-capable GPT-4 model, as well as the corresponding Plugin store. To get started, begin by selecing the GPT-4 Plugins model from the dropdown at [https://chat.openai.com](https://chat.openai.com). 
+
+<img src="assets/selecting_gpt4_plugins.png" width=300 />
+
+Once the GPT-4 Plugins model has been selected, you'll have the opportunity to add plugins via the store:
+
+<img src="assets/plugin_store_menu.png" width=300 />
+
+To install the plugin, search for "Monarch" in the store and click the Install button:
+
+<img src="assets/monarch_plugin_search.png" width=400 />
+
+When the plugin is installed and enabled, the Monarch logo (an infinity-like symbol) will show near the top, and you can ask a natural language question about diseases, genes, or phenotypes.
+
+<img src="assets/monarch_activated.png" width=600 />
+
+
+
+
+## For Developers
 
 ### Get access to the ChatGPT plugin developer program
 
-Unfortunately you will need to be accepted to the OpenAI developer program
+Developers will need to be accepted to the OpenAI developer program
 
-Join the waitlist [here](https://openai.com/waitlist/plugins)
-
-It may be possible to grant permissions broadly across an organization? https://community.openai.com/t/developer-access-for-colleagues/157315
+Join the waitlist [here](https://openai.com/waitlist/plugins). See also https://community.openai.com/t/developer-access-for-colleagues/157315
 
 ### Run dev server
 
