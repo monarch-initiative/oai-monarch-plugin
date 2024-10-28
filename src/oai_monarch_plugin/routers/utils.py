@@ -126,5 +126,5 @@ def get_pub_info(pub: str) -> dict:
             "url": f"https://pubmed.ncbi.nlm.nih.gov/{pmid}"
         })
         
-    pub_dict["status"] = "success"
+    pub_dict["status"] = "Success"
     return pub_dict
