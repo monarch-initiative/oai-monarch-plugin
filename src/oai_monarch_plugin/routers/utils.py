@@ -29,6 +29,22 @@ async def get_association_all(category: str, entity: str, limit: int, offset: in
         response = await client.get(api_url, params=params)
 
     response_json = response.json()
+
+    ## if items is None, we need it to be an empty list
+    if "items" in response_json:
+        if response_json["items"] is None:
+            response_json["items"] = []
+
+    ## if response_json has an "items" key, we need to make sure each entry of it has a "publications" key
+    ## that is not None - and if it is None, we need to set it to an empty list
+    if "items" in response_json:
+        for item in response_json["items"]:
+            if "publications" not in item:
+                item["publications"] = []
+            elif item["publications"] is None:
+                item["publications"] = []
+            
+
     return response_json
 
 
@@ -45,8 +61,12 @@ def get_pub_info(pub: str) -> dict:
             "id": pub
         })
 
-        canonical_isbn = canonical(pub.split(':')[1])
-        data = meta(canonical_isbn)
+        try:
+            canonical_isbn = canonical(pub.split(':')[1])
+            data = meta(canonical_isbn)
+        except:
+            pub_dict["status"] = "Error fetching publication info for ISBN " + pub
+            return pub_dict
 
         authors = data.get("Authors", [None])
         author = None
