@@ -2,6 +2,7 @@ import httpx
 from loguru import logger
 import eutils
 from isbnlib import canonical, meta
+import re
 
 from .config import settings
 
@@ -29,6 +30,22 @@ async def get_association_all(category: str, entity: str, limit: int, offset: in
         response = await client.get(api_url, params=params)
 
     response_json = response.json()
+
+    ## if items is None, we need it to be an empty list
+    if "items" in response_json:
+        if response_json["items"] is None:
+            response_json["items"] = []
+
+    ## if response_json has an "items" key, we need to make sure each entry of it has a "publications" key
+    ## that is not None - and if it is None, we need to set it to an empty list
+    if "items" in response_json:
+        for item in response_json["items"]:
+            if "publications" not in item:
+                item["publications"] = []
+            elif item["publications"] is None:
+                item["publications"] = []
+            
+
     return response_json
 
 
@@ -39,14 +56,24 @@ def get_pub_info(pub: str) -> dict:
 
     pub_dict = {"id": pub}
 
+    ## check the publication string is well-formatted, at least matching (ISBN|OMIM|PMID):[0-9]+
+    ## pub_dict with a status of "invalid" and return it
+    if not re.match(r"^(ISBN|OMIM|PMID):.+", pub):
+        pub_dict["status"] = "invalid"
+        return pub_dict
+
     if pub.startswith("ISBN"):
         logger.info({
             "event": "isbn_lookup",
             "id": pub
         })
 
-        canonical_isbn = canonical(pub.split(':')[1])
-        data = meta(canonical_isbn)
+        try:
+            canonical_isbn = canonical(pub.split(':')[1])
+            data = meta(canonical_isbn)
+        except:
+            pub_dict["status"] = "Error fetching publication info for ISBN " + pub
+            return pub_dict
 
         authors = data.get("Authors", [None])
         author = None
@@ -77,7 +104,12 @@ def get_pub_info(pub: str) -> dict:
 
         ec = eutils.Client(api_key = settings.ncbi_api_key)
         pmid = pub.split(':')[1]
-        data = next(iter(ec.efetch(db='pubmed', id = pmid)))
+
+        try:
+            data = next(iter(ec.efetch(db='pubmed', id = pmid)))
+        except:
+            pub_dict["status"] = "Error fetching publication info for PMID " + pmid
+            return pub_dict
 
         authors = data.authors
         author = None
@@ -93,6 +125,6 @@ def get_pub_info(pub: str) -> dict:
             "journal": data.jrnl,
             "url": f"https://pubmed.ncbi.nlm.nih.gov/{pmid}"
         })
-        print(pub_dict)
         
+    pub_dict["status"] = "Success"
     return pub_dict
