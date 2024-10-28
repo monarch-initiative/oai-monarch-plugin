@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "oai_monarch_plugin"
-version = "0.1.0"
+version = "0.1.1"
 description = "oai-monarch-plugin"
 authors = ["Shawn O'Neil <shawn@tislab.org>"]
 license = "MIT"
