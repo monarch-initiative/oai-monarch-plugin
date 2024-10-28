@@ -2,6 +2,7 @@ import httpx
 from loguru import logger
 import eutils
 from isbnlib import canonical, meta
+import re
 
 from .config import settings
 
@@ -55,6 +56,12 @@ def get_pub_info(pub: str) -> dict:
 
     pub_dict = {"id": pub}
 
+    ## check the publication string is well-formatted, at least matching (ISBN|OMIM|PMID):[0-9]+
+    ## pub_dict with a status of "invalid" and return it
+    if not re.match(r"^(ISBN|OMIM|PMID):.+", pub):
+        pub_dict["status"] = "invalid"
+        return pub_dict
+
     if pub.startswith("ISBN"):
         logger.info({
             "event": "isbn_lookup",
@@ -97,7 +104,12 @@ def get_pub_info(pub: str) -> dict:
 
         ec = eutils.Client(api_key = settings.ncbi_api_key)
         pmid = pub.split(':')[1]
-        data = next(iter(ec.efetch(db='pubmed', id = pmid)))
+
+        try:
+            data = next(iter(ec.efetch(db='pubmed', id = pmid)))
+        except:
+            pub_dict["status"] = "Error fetching publication info for PMID " + pmid
+            return pub_dict
 
         authors = data.authors
         author = None
@@ -113,6 +125,6 @@ def get_pub_info(pub: str) -> dict:
             "journal": data.jrnl,
             "url": f"https://pubmed.ncbi.nlm.nih.gov/{pmid}"
         })
-        print(pub_dict)
         
+    pub_dict["status"] = "success"
     return pub_dict
