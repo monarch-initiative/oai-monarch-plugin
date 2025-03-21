@@ -18,8 +18,6 @@ start-prod:
 	# OAI_PLUGIN_HOST_PORT is set in the docker-compose.yml for production
 	poetry run gunicorn oai_monarch_plugin.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8080
 
-
-
 dev: install start-dev
 
 start-dev:
