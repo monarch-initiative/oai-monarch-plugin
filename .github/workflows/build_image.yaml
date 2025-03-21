@@ -36,3 +36,19 @@ jobs:
           image_name: monarch-api/oai-monarch-plugin
           image_tag: latest, ${{ steps.get-tag.outputs.IMAGE_TAG }}, ${{ github.sha }}
           dockerfile: ./Dockerfile
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Tag Image for GitHub Container Registry
+        run: |
+          docker tag us-central1-docker.pkg.dev/monarch-initiative/monarch-api/oai-monarch-plugin:latest ghcr.io/${{ github.repository_owner }}/oai-monarch-plugin:latest
+          docker tag us-central1-docker.pkg.dev/monarch-initiative/monarch-api/oai-monarch-plugin:${{ steps.get-tag.outputs.IMAGE_TAG }} ghcr.io/${{ github.repository_owner }}/oai-monarch-plugin:${{ steps.get-tag.outputs.IMAGE_TAG }}
+          docker tag us-central1-docker.pkg.dev/monarch-initiative/monarch-api/oai-monarch-plugin:${{ github.sha }} ghcr.io/${{ github.repository_owner }}/oai-monarch-plugin:${{ github.sha }}
+
+      - name: Push Image to GitHub Container Registry
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/oai-monarch-plugin:latest
+          docker push ghcr.io/${{ github.repository_owner }}/oai-monarch-plugin:${{ steps.get-tag.outputs.IMAGE_TAG }}
+          docker push ghcr.io/${{ github.repository_owner }}/oai-monarch-plugin:${{ github.sha }}
+  
